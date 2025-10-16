@@ -6,7 +6,7 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 21:05:14 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/10/13 21:09:36 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/10/16 23:36:52 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/types.h>
-# include "./libft/libft.h"
+# include "../libft/libft.h"
 
 typedef struct  s_data
 {

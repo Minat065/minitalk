@@ -16,19 +16,22 @@ CFLAGS = -Wall -Wextra -Werror
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-INCLUDES = -I$(LIBFT_DIR)
+INCLUDES = -I$(LIBFT_DIR) -Iincludes
 
-SERVER_SRC = server.c
-CLIENT_SRC = client.c
+SRC_DIR = srcs
+OBJ_DIR = objs
 
-BONUS_SERVER_SRC = server_bonus.c
-BONUS_CLIENT_SRC = client_bonus.c
+SERVER_SRC = $(SRC_DIR)/server.c
+CLIENT_SRC = $(SRC_DIR)/client.c
 
-SERVER_OBJ = $(SERVER_SRC:.c=.o)
-CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
+BONUS_SERVER_SRC = $(SRC_DIR)/server_bonus.c
+BONUS_CLIENT_SRC = $(SRC_DIR)/client_bonus.c
 
-BONUS_SERVER_OBJ = $(BONUS_SERVER_SRC:.c=.o)
-BONUS_CLIENT_OBJ = $(BONUS_CLIENT_SRC:.c=.o)
+SERVER_OBJ = $(OBJ_DIR)/server.o
+CLIENT_OBJ = $(OBJ_DIR)/client.o
+
+BONUS_SERVER_OBJ = $(OBJ_DIR)/server_bonus.o
+BONUS_CLIENT_OBJ = $(OBJ_DIR)/client_bonus.o
 
 SERVER = server
 CLIENT = client
@@ -49,8 +52,11 @@ $(BONUS_CLIENT): $(LIBFT) $(BONUS_CLIENT_OBJ)
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
-%.o: %.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 $(SERVER): $(LIBFT) $(SERVER_OBJ)
 	$(CC) $(CFLAGS) $(SERVER_OBJ) $(LIBFT) -o $(SERVER)
@@ -60,7 +66,7 @@ $(CLIENT): $(LIBFT) $(CLIENT_OBJ)
 
 clean:
 	make -C $(LIBFT_DIR) clean
-	rm -f $(SERVER_OBJ) $(CLIENT_OBJ) $(BONUS_SERVER_OBJ) $(BONUS_CLIENT_OBJ)
+	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	make -C $(LIBFT_DIR) fclean
