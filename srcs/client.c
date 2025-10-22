@@ -18,7 +18,13 @@
 
 volatile sig_atomic_t	g_ack_received = 0;
 
-void	ack_handler(int sig)
+void	bit_ack_handler(int sig)
+{
+	(void)sig;
+	g_ack_received = 1;
+}
+
+void	final_ack_handler(int sig)
 {
 	(void)sig;
 	g_ack_received = 1;
@@ -73,7 +79,8 @@ int	main(int argc, char **argv)
 		ft_printf("Error: Invalid PID\n");
 		return (1);
 	}
-	signal(SIGUSR1, ack_handler);
+	signal(SIGUSR1, final_ack_handler);
+	signal(SIGUSR2, bit_ack_handler);
 	send_string(server_pid, argv[2]);
 	return (0);
 }
