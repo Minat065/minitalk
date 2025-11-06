@@ -6,40 +6,33 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 01:36:14 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/10/13 18:00:51 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/06 22:36:34 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include "libft.h"
-
-typedef struct	s_data
-{
-	char	current_char;
-	int		bit_count;
-	pid_t	client_pid;
-}		t_data;
+#include "../includes/minitalk.h"
 
 t_data	g_data;
 
-int	get_utf8_length(unsigned char c)
+void	handle_complete_byte(pid_t client_pid, char *utf8_buffer,
+		int *expected_len, int *received_len)
 {
-	if ((c & 0x80) == 0x00)
-		return (1);
-	if ((c & 0xE0) == 0xC0)
-		return (2);
-	if ((c & 0xF0) == 0xE0)
-		return (3);
-	if ((c & 0xF8) == 0xF0)
-		return (4);
-	return (1);
-}
+	int	is_char_complete;
 
-int	is_utf8_continuation(unsigned char c)
-{
-	return ((c & 0xC0) == 0x80);
+	is_char_complete = handle_utf8_byte(g_data.current_char,
+			utf8_buffer, expected_len, received_len);
+	if (is_char_complete)
+	{
+		write(1, utf8_buffer, *received_len);
+		send_acknowledgment(client_pid,
+			(*received_len == 1 && utf8_buffer[0] == '\n'));
+		*received_len = 0;
+		*expected_len = 0;
+	}
+	else
+		kill(client_pid, SIGUSR2);
+	g_data.current_char = 0;
+	g_data.bit_count = 0;
 }
 
 void	signal_handler(int sig, siginfo_t *info, void *context)
@@ -53,38 +46,10 @@ void	signal_handler(int sig, siginfo_t *info, void *context)
 		g_data.client_pid = info->si_pid;
 	if (info->si_pid != g_data.client_pid)
 		return ;
-	if (sig == SIGUSR1)
-		g_data.current_char = (g_data.current_char << 1) | 0;
-	else
-		g_data.current_char = (g_data.current_char << 1) | 1;
-	g_data.bit_count++;
-	if (g_data.bit_count == 8)
+	if (process_bit(sig))
 	{
-		if (received_len == 0)
-			expected_len = get_utf8_length((unsigned char)g_data.current_char);
-		else if (!is_utf8_continuation((unsigned char)g_data.current_char))
-		{
-			received_len = 0;
-			expected_len = get_utf8_length((unsigned char)g_data.current_char);
-		}
-		utf8_buffer[received_len++] = g_data.current_char;
-		if (received_len == expected_len)
-		{
-			write(1, utf8_buffer, received_len);
-			if (received_len == 1 && utf8_buffer[0] == '\n')
-			{
-				kill(info->si_pid, SIGUSR1);
-				g_data.client_pid = 0;
-			}
-			else
-				kill(info->si_pid, SIGUSR2);
-			received_len = 0;
-			expected_len = 0;
-		}
-		else
-			kill(info->si_pid, SIGUSR2);
-		g_data.current_char = 0;
-		g_data.bit_count = 0;
+		handle_complete_byte(info->si_pid, utf8_buffer,
+			&expected_len, &received_len);
 		return ;
 	}
 	kill(info->si_pid, SIGUSR2);
@@ -95,18 +60,24 @@ int	main(void)
 	struct sigaction	sa;
 	pid_t				server_pid;
 
-	g_data.current_char = 0;
-	g_data.bit_count = 0;
-	g_data.client_pid = 0;
 	server_pid = getpid();
 	ft_printf("%d\n", (int)server_pid);
-	sa.sa_sigaction = signal_handler;
+	ft_memset(&sa, 0, sizeof(sa));
 	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGUSR1);
 	sigaddset(&sa.sa_mask, SIGUSR2);
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
+	if (sigaction(SIGUSR1, &sa, NULL) == -1)
+	{
+		ft_printf("Error: sigaction for SIGUSR1 failed\n");
+		return (1);
+	}
+	if (sigaction(SIGUSR2, &sa, NULL) == -1)
+	{
+		ft_printf("Error: sigaction for SIGUSR2 failed\n");
+		return (1);
+	}
 	while (1)
 		pause();
 	return (0);

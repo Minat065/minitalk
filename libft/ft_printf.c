@@ -6,7 +6,7 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 14:31:59 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/02/18 16:08:20 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/04 21:17:09 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,4 +126,3 @@ int	ft_printf(const char *format, ...)
 	va_end(ap);
 	return (count_char);
 }
-
