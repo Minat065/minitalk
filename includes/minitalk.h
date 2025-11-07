@@ -6,7 +6,7 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 22:39:57 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/06 22:50:37 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 01:34:20 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_data
 	volatile pid_t				client_pid;
 }							t_data;
 
-extern t_data	g_data;
+extern t_data					g_data;
 extern volatile sig_atomic_t	g_ack_received;
 
 int		get_utf8_length(unsigned char c);
