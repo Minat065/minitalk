@@ -6,13 +6,13 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 01:36:14 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/06 22:36:34 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 01:57:54 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
 
-t_data	g_data;
+static t_data	g_data;
 
 void	handle_complete_byte(pid_t client_pid, char *utf8_buffer,
 		int *expected_len, int *received_len)

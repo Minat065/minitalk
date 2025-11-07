@@ -6,58 +6,13 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 02:28:01 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/06 22:54:19 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 01:58:33 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-volatile sig_atomic_t	g_ack_received = 0;
-
-// void	bit_ack_handler(int sig)
-// {
-// 	(void)sig;
-// 	g_ack_received = 1;
-// }
-
-// void	bit_ack_handler(int sig)
-// {
-// 	(void)sig;
-// 	g_ack_received = 1;
-// }
-
-// void	send_bit(pid_t pid, int bit)
-// {
-// 	g_ack_received = 0;
-// 	if (bit == 1)
-// 		kill(pid, SIGUSR2);
-// 	else
-// 		kill(pid, SIGUSR1);
-// 	while (!g_ack_received)
-// 		usleep(50);
-// }
-
-// void	send_char(pid_t pid, char c)
-// {
-// 	int		digit;
-
-// 	digit = 7;
-// 	while (digit >= 0)
-// 	{
-// 		send_bit(pid, (c >> digit) & 1);
-// 		digit--;
-// 	}
-// }
-
-// void	send_string(pid_t server_pid, char *str)
-// {
-// 	while (*str)
-// 	{
-// 		send_char(server_pid, *str);
-// 		str++;
-// 	}
-// 	send_char(server_pid, '\n');
-// }
+static volatile sig_atomic_t	g_ack_received = 0;
 
 int	main(int argc, char **argv)
 {
@@ -70,7 +25,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	server_pid = ft_atoi(argv[1]);
-	if (server_pid <= 0)
+	if (server_pid <= 1)
 	{
 		ft_printf("Error: Invalid PID\n");
 		return (1);
