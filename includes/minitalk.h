@@ -6,7 +6,7 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 22:39:57 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/08 01:57:08 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 03:25:14 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ typedef struct s_data
 	volatile pid_t				client_pid;
 }							t_data;
 
-extern t_data					g_data;
-extern volatile sig_atomic_t	g_ack_received;
-
 int		get_utf8_length(unsigned char c);
 int		is_utf8_continuation(unsigned char c);
 int		process_bit(int sig);
@@ -42,5 +39,7 @@ void	final_ack_handler(int sig);
 void	send_bit(pid_t pid, int bit);
 void	send_char(pid_t pid, char c);
 void	send_string(pid_t server_pid, char *str);
+void	handle_complete_byte(pid_t client_pid, char *utf8_buffer,
+			int *expected_len, int *received_len);
 
 #endif

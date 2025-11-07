@@ -6,11 +6,13 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 22:38:10 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/06 22:54:58 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 03:26:01 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+static volatile sig_atomic_t	g_ack_received = 0;
 
 void	bit_ack_handler(int sig)
 {

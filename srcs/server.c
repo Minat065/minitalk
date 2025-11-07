@@ -6,53 +6,42 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 01:36:14 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/08 01:57:54 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 03:56:24 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
 
-static t_data	g_data;
-
-void	handle_complete_byte(pid_t client_pid, char *utf8_buffer,
-		int *expected_len, int *received_len)
+int	is_utf8_continuation(unsigned char c)
 {
-	int	is_char_complete;
-
-	is_char_complete = handle_utf8_byte(g_data.current_char,
-			utf8_buffer, expected_len, received_len);
-	if (is_char_complete)
-	{
-		write(1, utf8_buffer, *received_len);
-		send_acknowledgment(client_pid,
-			(*received_len == 1 && utf8_buffer[0] == '\n'));
-		*received_len = 0;
-		*expected_len = 0;
-	}
-	else
-		kill(client_pid, SIGUSR2);
-	g_data.current_char = 0;
-	g_data.bit_count = 0;
+	return ((c & 0xC0) == 0x80);
 }
 
-void	signal_handler(int sig, siginfo_t *info, void *context)
+int	handle_utf8_byte(char byte, char *utf8_buffer,
+	int *expected_len, int *received_len)
 {
-	static char	utf8_buffer[4];
-	static int	expected_len = 0;
-	static int	received_len = 0;
-
-	(void)context;
-	if (g_data.client_pid == 0)
-		g_data.client_pid = info->si_pid;
-	if (info->si_pid != g_data.client_pid)
-		return ;
-	if (process_bit(sig))
+	if (*received_len == 0)
+		*expected_len = get_utf8_length((unsigned char)byte);
+	else if (!is_utf8_continuation((unsigned char)byte))
 	{
-		handle_complete_byte(info->si_pid, utf8_buffer,
-			&expected_len, &received_len);
-		return ;
+		*received_len = 0;
+		*expected_len = get_utf8_length((unsigned char)byte);
 	}
-	kill(info->si_pid, SIGUSR2);
+	utf8_buffer[(*received_len)++] = byte;
+	return (*received_len == *expected_len);
+}
+
+int	get_utf8_length(unsigned char c)
+{
+	if ((c & 0x80) == 0x00)
+		return (1);
+	if ((c & 0xE0) == 0xC0)
+		return (2);
+	if ((c & 0xF0) == 0xE0)
+		return (3);
+	if ((c & 0xF8) == 0xF0)
+		return (4);
+	return (1);
 }
 
 int	main(void)

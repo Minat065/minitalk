@@ -6,13 +6,11 @@
 /*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 02:28:01 by mirokugo          #+#    #+#             */
-/*   Updated: 2025/11/08 01:58:33 by mirokugo         ###   ########.fr       */
+/*   Updated: 2025/11/08 03:25:56 by mirokugo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
-static volatile sig_atomic_t	g_ack_received = 0;
 
 int	main(int argc, char **argv)
 {
