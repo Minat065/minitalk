@@ -31,6 +31,11 @@ SERVER_OBJ = $(OBJ_DIR)/server.o \
 CLIENT_OBJ = $(OBJ_DIR)/client.o \
 			 $(OBJ_DIR)/client_utils.o
 
+BONUS_SERVER_OBJ = $(OBJ_DIR)/server_bonus.o \
+				   $(OBJ_DIR)/server_utils_bonus.o
+BONUS_CLIENT_OBJ = $(OBJ_DIR)/client_bonus.o \
+				   $(OBJ_DIR)/client_utils_bonus.o
+
 SERVER = server
 CLIENT = client
 
@@ -51,6 +56,10 @@ $(SERVER): $(LIBFT) $(SERVER_OBJ)
 $(CLIENT): $(LIBFT) $(CLIENT_OBJ)
 	$(CC) $(CFLAGS) $(CLIENT_OBJ) $(LIBFT) -o $(CLIENT)
 
+bonus: $(LIBFT) $(BONUS_SERVER_OBJ) $(BONUS_CLIENT_OBJ) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $(BONUS_SERVER_OBJ) $(LIBFT) -o $(SERVER)
+	$(CC) $(CFLAGS) $(BONUS_CLIENT_OBJ) $(LIBFT) -o $(CLIENT)
+
 clean:
 # 	make -C $(LIBFT_DIR) clean
 	rm -rf $(OBJ_DIR)
@@ -61,4 +70,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus
