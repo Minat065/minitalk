@@ -38,10 +38,8 @@ void	signal_handler(int sig, siginfo_t *info, void *context)
 	static int	received_len = 0;
 
 	(void)context;
-	(void)info;
 	if (g_data.client_pid != 0 && info->si_pid != g_data.client_pid)
 	{
-		kill(g_data.client_pid, SIGTERM);
 		reset_data();
 		expected_len = 0;
 		received_len = 0;
