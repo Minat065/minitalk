@@ -1,0 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client_utils_bonus.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mirokugo <mirokugo@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 22:38:10 by mirokugo          #+#    #+#             */
+/*   Updated: 2025/11/08 03:26:01 by mirokugo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minitalk_bonus.h"
+
+static volatile sig_atomic_t	g_signal = 0;
+
+void	bit_ack_handler(int sig)
+{
+	if (sig == SIGUSR1)
+		g_signal = 2;
+	else
+		g_signal = 1;
+}
+
+void	send_bit(pid_t pid, int bit)
+{
+	g_signal = 0;
+	if (bit == 1)
+		kill(pid, SIGUSR2);
+	else
+		kill(pid, SIGUSR1);
+	while (!g_signal)
+		usleep(50);
+}
+
+void	send_char(pid_t pid, char c)
+{
+	int		digit;
+
+	digit = 7;
+	while (digit >= 0)
+	{
+		send_bit(pid, (c >> digit) & 1);
+		digit--;
+	}
+}
+
+void	send_string(pid_t server_pid, char *str)
+{
+	while (*str)
+	{
+		send_char(server_pid, *str);
+		str++;
+	}
+	send_char(server_pid, '\n');
+	if (g_signal == 2)
+		ft_printf("Message received by server\n");
+}
